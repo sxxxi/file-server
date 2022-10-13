@@ -8,18 +8,25 @@ enum Error {
     Invalid
 }
 
-struct ManagerSpace<'a> {
+pub struct AppSpace<'a> {
     root: &'a Path,
     current: &'a Path
 }
 
-impl<'a> ManagerSpace<'a> {
+impl<'a> AppSpace<'a> {
     pub fn new(root: &'a str) -> Self {
-        ManagerSpace { 
+        AppSpace { 
             root: Path::new(root),
             current: Path::new("")
         }
     }
+
+    pub fn pwd(&self) -> PathBuf {
+        self.root.join(self.current)
+    }
+
+    // List files | change directory | delete |
+     
 
     pub fn parse_current(&mut self, path: &str) -> Result<PathBuf, Error> {
         let mut path = Path::new(path);
@@ -36,7 +43,7 @@ impl<'a> ManagerSpace<'a> {
             path_buf.push(path);
             
         } else {
-            let (op, str) = ManagerSpace::get_initial_operator(path).unwrap();
+            let (op, str) = AppSpace::get_initial_operator(path).unwrap();
             if let Some(op) = op {
                 match op {
                     ".." => {
@@ -55,7 +62,7 @@ impl<'a> ManagerSpace<'a> {
             path = str;
         }
         
-        if ManagerSpace::check_existence(path_buf) {
+        if AppSpace::check_existence(path_buf) {
             return Ok(PathBuf::from(path));
         }
 
@@ -85,7 +92,7 @@ impl<'a> ManagerSpace<'a> {
     }
 }
 
-impl Display for ManagerSpace<'_> {
+impl Display for AppSpace<'_> {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         write!(f, "{}/{}", self.root.display(), self.current.display())
     }
