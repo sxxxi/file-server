@@ -1,0 +1,2 @@
+I'll make things simple.
+The server listens and reads requests. The requests can either be Get, List, or Put. I will not implement fancy features such as integers, strings, or arrays in byte format for the program to send over the network.  
