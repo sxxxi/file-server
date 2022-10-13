@@ -1,4 +1,4 @@
-use std::{path::{ Path, PathBuf, Component }, ffi::OsStr};
+use std::path::{ Path, PathBuf, Component }; 
 use std::fmt::{ Formatter, Display };
 
 
@@ -12,7 +12,7 @@ pub enum Error {
 
 pub struct AppSpace {
     root: PathBuf,
-    pub current: PathBuf
+    current: PathBuf
 }
 
 
@@ -30,26 +30,24 @@ impl AppSpace {
 
     // Just parse. No checks. Let the file ops do it later.
     pub fn parse_path(&mut self, path: &str) -> Result<PathBuf, Error> {
-        let mut path_buf = PathBuf::new();
-        let path = Path::new(path);
+        let mut path_buf = PathBuf::new();  // The base buffer. Returned at the end.
+        let path = Path::new(path);           // The passed argument as Path to perform necessary operations.
+        let mut no_root = PathBuf::from(self.current        
+            .strip_prefix(self.root.clone())
+            .unwrap());                              // PWD stripped off of the root path
 
-        
-        // To be used for file path operations. ('..', '~', '.')
-        let mut no_root = PathBuf::from(self.current.strip_prefix(self.root.clone()).unwrap());
-
-        // Check every component for operations. Return Error::InvalidOp if something goes wrong.
+        // Check every component for operations.       
         let mut component_pos: usize = 0;
         for c in path.components() {
             match c {
                 Component::RootDir => {
-                    //This happens 0 or 1 time
+                    //This happens 0 or 1 times
                     path_buf.push(self.root.clone());
                 } 
                 Component::ParentDir => {
                     no_root.pop();
                 }
-                // No support for tilde based on the docs :(
-                Component::Normal(s) if s == "~" => { 
+                Component::Normal(s) if s == "~" => {   // No support for tilde based on the docs :(
                     if component_pos == 0 {
                         path_buf.push(self.root.clone());
                         no_root.clear();
@@ -60,8 +58,7 @@ impl AppSpace {
                 Component::Normal(s) => {
                     no_root.push(s);
                 }
-                // I don't think i'm gonna support Windows 
-                _ => {}
+                _ => {} // I don't think i'm gonna support Windows 
             }
             component_pos += 1;
         }
