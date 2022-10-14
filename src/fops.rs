@@ -2,8 +2,6 @@ use std::path::{ Path, PathBuf, Component };
 use std::fmt::{ Formatter, Display };
 use std::fs::{ self, DirBuilder, File };
 
-use tokio::io::copy;
-
 #[derive(Debug)]
 pub enum Error {
     NotFound,
